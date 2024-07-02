@@ -47,7 +47,7 @@ Projekt zawiera testy jednostkowe dla `DrinkService`.
 
 ## Autor
 
-- **Grzegorz Berk** - [Twoje GitHub](https://github.com/grzegorzberk)
+- **Grzegorz Berk** 
 
 ## Licencja
 
