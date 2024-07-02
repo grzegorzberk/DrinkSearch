@@ -11,7 +11,7 @@ class ShowDetailsViewController: UIViewController {
 
     @IBOutlet weak var drinkImageView: UIImageView!
     @IBOutlet weak var drinkNameLabel: UILabel!
-    @IBOutlet weak var instructionsTextView: UITextView!  // Zmieniono na UITextView
+    @IBOutlet weak var instructionsTextView: UITextView!
 
     var drink: Drink?
 
@@ -19,15 +19,23 @@ class ShowDetailsViewController: UIViewController {
         super.viewDidLoad()
         if let drink = drink {
             configureView(with: drink)
+        } else {
+            showErrorAlert(message: "No drink details available")
         }
     }
 
     private func configureView(with drink: Drink) {
         drinkNameLabel.text = drink.strDrink
-        instructionsTextView.text = drink.strInstructions  // Ustawianie instrukcji
+        instructionsTextView.text = drink.strInstructions ?? "No instructions available"
         if let urlString = drink.strDrinkThumb, let url = URL(string: urlString) {
             drinkImageView.loadImage(from: url)
         }
+    }
+
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
 
