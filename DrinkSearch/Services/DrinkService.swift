@@ -11,7 +11,10 @@ struct DrinkService {
 
     func fetchDrinks(query: String, completion: @escaping (Result<[Drink], Error>) -> Void) {
         let urlString = "https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=\(query)"
-        guard let url = URL(string: urlString) else { return }
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
+            return
+        }
 
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             if let error = error {
@@ -19,7 +22,10 @@ struct DrinkService {
                 return
             }
 
-            guard let data = data else { return }
+            guard let data = data else {
+                completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
+                return
+            }
 
             do {
                 let drinkResponse = try JSONDecoder().decode(DrinkResponse.self, from: data)
@@ -32,7 +38,10 @@ struct DrinkService {
 
     func fetchDrinkDetails(id: String, completion: @escaping (Result<Drink, Error>) -> Void) {
         let urlString = "https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=\(id)"
-        guard let url = URL(string: urlString) else { return }
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
+            return
+        }
 
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             if let error = error {
@@ -40,7 +49,10 @@ struct DrinkService {
                 return
             }
 
-            guard let data = data else { return }
+            guard let data = data else {
+                completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data received"])))
+                return
+            }
 
             do {
                 let drinkResponse = try JSONDecoder().decode(DrinkDetailsResponse.self, from: data)
@@ -55,4 +67,3 @@ struct DrinkService {
         }.resume()
     }
 }
-
