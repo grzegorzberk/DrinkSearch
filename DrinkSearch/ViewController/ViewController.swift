@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ViewController: UIViewController, UISearchBarDelegate {
+class ViewController: UIViewController {
 
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
@@ -27,29 +27,37 @@ class ViewController: UIViewController, UISearchBarDelegate {
         tableView.register(TableViewCell.self, forCellReuseIdentifier: "DrinkCell")
     }
 
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let searchText = searchBar.text, !searchText.isEmpty else { return }
-        fetchDrinks(searchText)
-    }
-
     private func fetchDrinks(_ query: String) {
         drinkService.fetchDrinks(query: query) { [weak self] result in
-            switch result {
-            case .success(let drinks):
-                self?.drinks = drinks
-                DispatchQueue.main.async {
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let drinks):
+                    self?.drinks = drinks
                     self?.tableView.reloadData()
+                case .failure(let error):
+                    self?.showErrorAlert(message: error.localizedDescription)
                 }
-            case .failure(let error):
-                print("Error fetching drinks: \(error)")
             }
         }
+    }
+
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let destinationVC = segue.destination as? ShowDetailsViewController, let drink = sender as? Drink {
             destinationVC.drink = drink
         }
+    }
+}
+
+extension ViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text, !searchText.isEmpty else { return }
+        fetchDrinks(searchText)
     }
 }
 
@@ -70,4 +78,3 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         performSegue(withIdentifier: "ShowDetails", sender: drinks[indexPath.row])
     }
 }
-
